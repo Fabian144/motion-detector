@@ -1,0 +1,44 @@
+# Build output
+build/
+sdkconfig.old
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# VS Code
+.vscode/
+
+# CLion
+.idea/
+cmake-build-*/
+
+# ESP-IDF tools/managed components
+managed_components/
+dependencies.lock
+
+# Compiled binaries
+*.o
+*.obj
+*.elf
+*.bin
+*.map
+*.a
+*.so
+
+# Logs
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Local environment / secrets
+*.env
+secrets.h
+wifi_credentials.h
