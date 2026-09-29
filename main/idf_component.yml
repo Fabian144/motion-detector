@@ -15,4 +15,5 @@ dependencies:
   #   # All dependencies of `main` are public by default.
   #   public: true
   zorxx/lcd1602: '*'
-  vgerwen/hcsr04: '*'
+  esp-idf-lib/dht: '*'
+  esp-idf-lib/ultrasonic: '*'
