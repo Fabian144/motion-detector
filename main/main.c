@@ -7,5 +7,8 @@
 #include "esp_vfs_fat.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "hcsr04_driver.h"
 #include "lcd1602/lcd1602.h"
 #include "sdmmc_cmd.h"
+
+void app_main(void) {}
