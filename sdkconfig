@@ -724,14 +724,26 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 # GPIO Configuration
 #
+# default:
 CONFIG_TYPE_DHT11=y
+# default:
 # CONFIG_TYPE_AM2301 is not set
+# default:
 # CONFIG_TYPE_SI7021 is not set
+# default:
 CONFIG_HYGRO_GPIO=5
-CONFIG_INTERNAL_PULLUP=13
+# default:
+# CONFIG_INTERNAL_PULLUP is not set
+# default:
+CONFIG_TRIGGER_GPIO=13
+# default:
 CONFIG_ECHO_GPIO=27
 # default:
 CONFIG_MAX_DISTANCE=500
+# default:
+CONFIG_POTENTIOMETER_GPIO=4
+# default:
+CONFIG_BUZZER_GPIO=18
 # end of GPIO Configuration
 
 #

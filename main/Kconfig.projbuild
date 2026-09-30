@@ -1,7 +1,7 @@
 menu "GPIO Configuration"
     choice CHIP_TYPE
         prompt "Select chip type"
-        default TYPE_AM2301
+        default TYPE_DHT11
 
         config TYPE_DHT11
             bool "DHT11"
@@ -17,7 +17,7 @@ menu "GPIO Configuration"
         default 4 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C6 || IDF_TARGET_ESP32C61
         default 4 if IDF_TARGET_ESP32H2
         default 4 if IDF_TARGET_ESP32P4
-        default 17 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        default 5 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
         help
             GPIO number connected to DATA pin
 
@@ -25,9 +25,9 @@ menu "GPIO Configuration"
         bool "Enable internal pull-up resistor"
         default 0
         help
-        	Check this option if you don't have external pull-up resistor on data GPIO.
-        	DHT sensors that come mounted on a PCB generally have pull-up resistors on the data pin.
-        	But for stable operation, it is recommended to provide an external pull-up resistor.
+						Check this option if you don't have external pull-up resistor on data GPIO.
+						DHT sensors that come mounted on a PCB generally have pull-up resistors on the data pin.
+						But for stable operation, it is recommended to provide an external pull-up resistor.
 
 		config TRIGGER_GPIO
         int "Trigger GPIO number"
@@ -35,23 +35,35 @@ menu "GPIO Configuration"
         default 4 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C6 || IDF_TARGET_ESP32C61
         default 4 if IDF_TARGET_ESP32H2
         default 4 if IDF_TARGET_ESP32P4
-        default 17 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        default 13 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
         help
             GPIO number for TRIGGER pin of ultrasonic module
 
     config ECHO_GPIO
-        int "Echo GPIO number"
-        default 5 if IDF_TARGET_ESP8266 || IDF_TARGET_ESP32C3
-        default 5 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C6 || IDF_TARGET_ESP32C61
-        default 5 if IDF_TARGET_ESP32H2
-        default 5 if IDF_TARGET_ESP32P4
-        default 16 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
-        help
-            GPIO number for ECHO pin of ultrasonic module
+				int "Echo GPIO number"
+				default 5 if IDF_TARGET_ESP8266 || IDF_TARGET_ESP32C3
+				default 5 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C6 || IDF_TARGET_ESP32C61
+				default 5 if IDF_TARGET_ESP32H2
+				default 5 if IDF_TARGET_ESP32P4
+				default 27 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+				help
+						GPIO number for ECHO pin of ultrasonic module
 
     config MAX_DISTANCE
-    	int "Maximal distance, cm"
-    	default 500
-    	help
-    	    Maximum measurable distance. If the distance is greater than this parameter, there will be a timeout
+				int "Maximal distance, cm"
+				default 500
+				help
+						Maximum measurable distance. If the distance is greater than this parameter, there will be a timeout
+
+		config POTENTIOMETER_GPIO
+			int "Potentiometer GPIO number"
+			default 4
+			help
+					GPIO number for the potentiometer
+
+		config BUZZER_GPIO
+			int "Passive piezo buzzer GPIO number"
+			default 18
+			help
+					GPIO number for the passive piezo buzzer
 endmenu

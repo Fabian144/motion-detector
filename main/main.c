@@ -23,4 +23,42 @@
 // Hygrothermograph
 #include "dht.h"
 
-void app_main(void) { }
+#if defined(CONFIG_TYPE_DHT11)
+static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_DHT11;
+#elif defined(CONFIG_TYPE_AM2301)
+static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_AM2301;
+#elif defined(CONFIG_TYPE_SI7021)
+static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_SI7021;
+#endif
+
+static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
+
+// static const gpio_num_t TRIGGER_GPIO = CONFIG_TRIGGER_GPIO;
+// static const gpio_num_t ECHO_GPIO = CONFIG_ECHO_GPIO;
+// static const int MAX_ULTRASONIC_DISTANCE = CONFIG_MAX_DISTANCE;
+
+// static const gpio_num_t POTENTIOMETER_GPIO = CONFIG_POTENTIOMETER_GPIO;
+
+// static const gpio_num_t BUZZER_GPIO = CONFIG_BUZZER_GPIO;
+
+void dht_test(void *pvParameters)
+{
+    float temperature, humidity;
+
+#ifdef CONFIG_INTERNAL_PULLUP
+    gpio_set_pull_mode(HYGRO_GPIO, GPIO_PULLUP_ONLY);
+#endif
+
+    while (1)
+    {
+        if (dht_read_float_data(HYGRO_TYPE, HYGRO_GPIO, &humidity, &temperature) == ESP_OK)
+            printf("Humidity: %.1f%% Temp: %.1fC\n", humidity, temperature);
+        else
+            printf("Could not read data from sensor\n");
+
+        vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+
+void app_main()
+{ xTaskCreate(dht_test, "dht_test", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL); }
