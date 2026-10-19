@@ -31,8 +31,6 @@ static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_AM2301;
 static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_SI7021;
 #endif
 
-static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
-
 // static const gpio_num_t TRIGGER_GPIO = CONFIG_TRIGGER_GPIO;
 // static const gpio_num_t ECHO_GPIO = CONFIG_ECHO_GPIO;
 // static const int MAX_ULTRASONIC_DISTANCE = CONFIG_MAX_DISTANCE;
@@ -41,7 +39,9 @@ static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
 
 // static const gpio_num_t BUZZER_GPIO = CONFIG_BUZZER_GPIO;
 
-void dht_test(void *pvParameters)
+static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
+
+void print_dht_data(void *pvParameters)
 {
     float temperature, humidity;
 
@@ -61,4 +61,4 @@ void dht_test(void *pvParameters)
 }
 
 void app_main()
-{ xTaskCreate(dht_test, "dht_test", 2048, NULL, 5, NULL); }
+{ xTaskCreate(print_dht_data, "print_dht_data", 2048, NULL, 5, NULL); }
