@@ -43,22 +43,24 @@ static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
 
 void print_dht_data(void *pvParameters)
 {
-    float temperature, humidity;
+	float temperature, humidity;
 
 #ifdef CONFIG_INTERNAL_PULLUP
-    gpio_set_pull_mode(HYGRO_GPIO, GPIO_PULLUP_ONLY);
+	gpio_set_pull_mode(HYGRO_GPIO, GPIO_PULLUP_ONLY);
 #endif
 
-    while (1)
-    {
-        if (dht_read_float_data(HYGRO_TYPE, HYGRO_GPIO, &humidity, &temperature) == ESP_OK)
-            printf("Humidity: %.1f%% Temp: %.1fC\n", humidity, temperature);
-        else
-            printf("Could not read data from sensor\n");
+	while (1)
+	{
+		if (dht_read_float_data(HYGRO_TYPE, HYGRO_GPIO, &humidity, &temperature) == ESP_OK)
+			printf("Humidity: %.1f%% Temp: %.1fC\n", humidity, temperature);
+		else
+			printf("Could not read data from sensor\n");
 
-        vTaskDelay(pdMS_TO_TICKS(2000));
-    }
+		vTaskDelay(pdMS_TO_TICKS(2000));
+	}
 }
 
 void app_main()
-{ xTaskCreate(print_dht_data, "print_dht_data", 2048, NULL, 5, NULL); }
+{
+	xTaskCreate(print_dht_data, "print_dht_data", 2048, NULL, 5, NULL);
+}
