@@ -3,25 +3,15 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
-
-// Speaker
-#include "driver/i2s_std.h"
-
-// SD card
-#include "driver/sdmmc_host.h"
-#include "sdmmc_cmd.h"
-#include "esp_vfs_fat.h"
-
-// LCD display
-#include "lcd1602/lcd1602.h"
-#include "driver/i2c_master.h"
-
-// Ultrasonic range meter
-#include "ultrasonic.h"
-#include "esp_err.h"
-
-// Hygrothermograph
-#include "dht.h"
+// #include "driver/i2s_std.h"		// Speaker
+// #include "driver/sdmmc_host.h" // SD
+// #include "sdmmc_cmd.h"					// SD
+// #include "esp_vfs_fat.h"				// SD
+// #include "lcd1602/lcd1602.h"		// LCD
+// #include "driver/i2c_master.h"	// LCD
+// #include "ultrasonic.h"				// Ultrasonic
+// #include "esp_err.h"						// Ultrasonic
+#include "dht.h"									// Hygro
 
 #if defined(CONFIG_TYPE_DHT11)
 static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_DHT11;
@@ -34,14 +24,12 @@ static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_SI7021;
 // static const gpio_num_t TRIGGER_GPIO = CONFIG_TRIGGER_GPIO;
 // static const gpio_num_t ECHO_GPIO = CONFIG_ECHO_GPIO;
 // static const int MAX_ULTRASONIC_DISTANCE = CONFIG_MAX_DISTANCE;
-
 // static const gpio_num_t POTENTIOMETER_GPIO = CONFIG_POTENTIOMETER_GPIO;
-
 // static const gpio_num_t BUZZER_GPIO = CONFIG_BUZZER_GPIO;
 
 static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
 
-void print_dht_data(void *pvParameters)
+void print_dht_data()
 {
 	float temperature, humidity;
 
