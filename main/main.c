@@ -1,13 +1,12 @@
 #include <stdio.h>
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include "driver/gpio.h"
 // #include "driver/i2s_std.h"		// Speaker
 // #include "driver/sdmmc_host.h" // SD
 // #include "sdmmc_cmd.h"					// SD
 // #include "esp_vfs_fat.h"				// SD
-// #include "lcd1602/lcd1602.h"		// LCD
+#include "lcd1602/lcd1602.h"			// LCD
 // #include "driver/i2c_master.h"	// LCD
 // #include "ultrasonic.h"				// Ultrasonic
 // #include "esp_err.h"						// Ultrasonic
@@ -26,7 +25,6 @@ static const dht_sensor_type_t HYGRO_TYPE = DHT_TYPE_SI7021;
 // static const int MAX_ULTRASONIC_DISTANCE = CONFIG_MAX_DISTANCE;
 // static const gpio_num_t POTENTIOMETER_GPIO = CONFIG_POTENTIOMETER_GPIO;
 // static const gpio_num_t BUZZER_GPIO = CONFIG_BUZZER_GPIO;
-
 static const gpio_num_t HYGRO_GPIO = CONFIG_HYGRO_GPIO;
 
 void print_dht_data()

@@ -19,7 +19,7 @@ menu "GPIO Configuration"
         default 4 if IDF_TARGET_ESP32P4
         default 5 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
         help
-            GPIO number connected to DATA pin
+            GPIO number connected to DATA pin.
 
     config INTERNAL_PULLUP
         bool "Enable internal pull-up resistor"
@@ -37,7 +37,7 @@ menu "GPIO Configuration"
         default 4 if IDF_TARGET_ESP32P4
         default 13 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
         help
-            GPIO number for TRIGGER pin of ultrasonic module
+            GPIO number for TRIGGER pin of ultrasonic module.
 
     config ECHO_GPIO
 				int "Echo GPIO number"
@@ -47,23 +47,41 @@ menu "GPIO Configuration"
 				default 5 if IDF_TARGET_ESP32P4
 				default 27 if IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
 				help
-						GPIO number for ECHO pin of ultrasonic module
+						GPIO number for ECHO pin of ultrasonic module.
 
     config MAX_DISTANCE
 				int "Maximal distance, cm"
 				default 500
 				help
-						Maximum measurable distance. If the distance is greater than this parameter, there will be a timeout
+						Maximum measurable distance. If the distance is greater than this parameter, there will be a timeout.
 
 		config POTENTIOMETER_GPIO
 			int "Potentiometer GPIO number"
 			default 4
 			help
-					GPIO number for the potentiometer
+					GPIO number for the potentiometer.
 
 		config BUZZER_GPIO
 			int "Passive piezo buzzer GPIO number"
 			default 18
 			help
-					GPIO number for the passive piezo buzzer
+					GPIO number for the passive piezo buzzer.
+
+		config ESP_I2C_PORT
+			int "ESP I2C Controller"
+			default 0
+			help
+				Number of the I2C Controller to use (usually 0 or 1).
+
+			config ESP_I2C_SDA
+			int "ESP I2C"
+			default 21
+			help
+				GPIO number to use for ESP I2C SDA.
+
+			config ESP_I2C_SCL
+			int "I2C Controller"
+			default 22
+			help
+				GPIO number to use for ESP I2C SCL.
 endmenu
