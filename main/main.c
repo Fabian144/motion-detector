@@ -8,12 +8,9 @@
 // #include "esp_vfs_fat.h"				// SD
 #include "dht.h"             // Hygro
 #include "lcd1602/lcd1602.h" // LCD
-// #include "ultrasonic.h"      // Ultrasonic
-// #include "esp_err.h"         // Ultrasonic
+#include "ultrasonic.h"      // Ultrasonic
+#include "esp_err.h"         // Ultrasonic
 
-// #define TRIGGER_GPIO 						CONFIG_TRIGGER_GPIO
-// #define ECHO_GPIO 								CONFIG_ECHO_GPIO
-// #define MAX_ULTRASONIC_DISTANCE 	CONFIG_MAX_DISTANCE
 // #define POTENTIOMETER_GPIO 			CONFIG_POTENTIOMETER_GPIO
 // #define BUZZER_GPIO 							CONFIG_BUZZER_GPIO
 #define HYGRO_GPIO      CONFIG_HYGRO_GPIO
@@ -21,6 +18,9 @@
 #define ESP_I2C_SDA     CONFIG_ESP_I2C_SDA
 #define ESP_I2C_SCL     CONFIG_ESP_I2C_SCL
 #define ESP_I2C_ADDRESS LCD1602_I2C_ADDRESS_DEFAULT
+#define TRIGGER_GPIO    CONFIG_TRIGGER_GPIO
+#define ECHO_GPIO       CONFIG_ECHO_GPIO
+#define MAX_DISTANCE_CM CONFIG_MAX_DISTANCE
 
 #if defined(CONFIG_TYPE_DHT11)
 #define HYGRO_TYPE DHT_TYPE_DHT11
@@ -31,14 +31,32 @@
 #endif
 
 float temperature, humidity;
+lcd1602_context *ctx;
+int current_max_distance = MAX_DISTANCE_CM;
 
 void set_dht_data(void *pvParameters);
 void display_dht_data(void *pvParameters);
+void detect_motion(void *pvParameters);
+void display_max_distance(void *pvParameters);
 
 void app_main()
 {
-    xTaskCreate(set_dht_data, "set dht data", 2048, NULL, 4, NULL);
-    xTaskCreate(display_dht_data, "show dht data on the lcd display", 4096, NULL, 5, NULL);
+    xTaskCreate(detect_motion, "detect motion with ultrasonic sensor", 4096, NULL, 4, NULL);
+    xTaskCreate(set_dht_data, "set dht data", 2048, NULL, 5, NULL);
+
+    i2c_lowlevel_config config = { 0 };
+    config.port = ESP_I2C_PORT;
+    config.pin_sda = ESP_I2C_SDA;
+    config.pin_scl = ESP_I2C_SCL;
+
+    ctx = lcd1602_init(ESP_I2C_ADDRESS, true, &config);
+    if (ctx == NULL)
+    {
+        printf("Could not initialize LCD display\n");
+    }
+
+    xTaskCreate(display_dht_data, "show dht data on the lcd display", 4096, NULL, 6, NULL);
+    xTaskCreate(display_max_distance, "show max supersonic distance on the lcd display", 2048, NULL, 7, NULL);
 }
 
 void set_dht_data(void *pvParameters)
@@ -60,18 +78,6 @@ void set_dht_data(void *pvParameters)
 
 void display_dht_data(void *pvParameters)
 {
-    i2c_lowlevel_config config = { 0 };
-    config.port = ESP_I2C_PORT;
-    config.pin_sda = ESP_I2C_SDA;
-    config.pin_scl = ESP_I2C_SCL;
-
-    lcd1602_context *ctx = lcd1602_init(ESP_I2C_ADDRESS, true, &config);
-    if (ctx == NULL)
-    {
-        printf("Could not initialize LCD display\n");
-        vTaskDelete(NULL);
-    }
-
     char line[32];
 
     while (1)
@@ -85,5 +91,55 @@ void display_dht_data(void *pvParameters)
         lcd1602_string(ctx, line);
 
         vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+
+void display_max_distance(void *pvParameters)
+{
+    char line[32];
+
+    while (1)
+    {
+				int current_max_distance_m = current_max_distance / 100;
+        snprintf(line, sizeof line, "%dM", current_max_distance_m);
+        lcd1602_set_cursor(ctx, 0, 14);
+        lcd1602_string(ctx, line);
+
+        vTaskDelay(pdMS_TO_TICKS(2000));
+    }
+}
+
+void detect_motion(void *pvParameters)
+{
+    ultrasonic_sensor_t sensor = { TRIGGER_GPIO, ECHO_GPIO };
+
+    ultrasonic_init(&sensor);
+
+    while (true)
+    {
+        float distance;
+        esp_err_t res = ultrasonic_measure(&sensor, MAX_DISTANCE_CM, &distance);
+        if (res != ESP_OK)
+        {
+            printf("Error %d: ", res);
+            switch (res)
+            {
+                case ESP_ERR_ULTRASONIC_PING:
+                    printf("Cannot ping (device is in invalid state)\n");
+                    break;
+                case ESP_ERR_ULTRASONIC_PING_TIMEOUT:
+                    printf("Ping timeout (no device found)\n");
+                    break;
+                case ESP_ERR_ULTRASONIC_ECHO_TIMEOUT:
+                    printf("Echo timeout (i.e. distance too big)\n");
+                    break;
+                default:
+                    printf("%s\n", esp_err_to_name(res));
+            }
+        }
+        else
+            printf("Distance: %0.04f m\n", distance);
+
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
