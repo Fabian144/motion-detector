@@ -30,9 +30,9 @@
 #define HYGRO_TYPE DHT_TYPE_SI7021
 #endif
 
-float temperature, humidity;
+int16_t temperature, humidity;
 lcd1602_context *ctx;
-int current_max_distance = MAX_DISTANCE_CM;
+float current_max_distance = MAX_DISTANCE_CM;
 
 void set_dht_data(void *pvParameters);
 void display_dht_data(void *pvParameters);
@@ -41,9 +41,6 @@ void display_max_distance(void *pvParameters);
 
 void app_main()
 {
-    xTaskCreate(detect_motion, "detect motion with ultrasonic sensor", 4096, NULL, 4, NULL);
-    xTaskCreate(set_dht_data, "set dht data", 2048, NULL, 5, NULL);
-
     i2c_lowlevel_config config = { 0 };
     config.port = ESP_I2C_PORT;
     config.pin_sda = ESP_I2C_SDA;
@@ -55,6 +52,8 @@ void app_main()
         printf("Could not initialize LCD display\n");
     }
 
+    xTaskCreate(detect_motion, "detect motion with ultrasonic sensor", 4096, NULL, 4, NULL);
+    xTaskCreate(set_dht_data, "set dht data", 2048, NULL, 5, NULL);
     xTaskCreate(display_dht_data, "show dht data on the lcd display", 4096, NULL, 6, NULL);
     xTaskCreate(display_max_distance, "show max supersonic distance on the lcd display", 2048, NULL, 7, NULL);
 }
@@ -67,7 +66,7 @@ void set_dht_data(void *pvParameters)
 
     while (1)
     {
-        if (dht_read_float_data(HYGRO_TYPE, HYGRO_GPIO, &humidity, &temperature) != ESP_OK)
+        if (dht_read_data(HYGRO_TYPE, HYGRO_GPIO, &humidity, &temperature) != ESP_OK)
         {
             printf("Could not read data from sensor\n");
         }
@@ -82,11 +81,11 @@ void display_dht_data(void *pvParameters)
 
     while (1)
     {
-        snprintf(line, sizeof line, "Temp: %.1fC", temperature);
+        snprintf(line, sizeof line, "Temp: %dC", temperature / 10);
         lcd1602_set_cursor(ctx, 0, 0);
         lcd1602_string(ctx, line);
 
-        snprintf(line, sizeof line, "Hum:  %.1f%%", humidity);
+        snprintf(line, sizeof line, "Hum:  %d%%", humidity / 10);
         lcd1602_set_cursor(ctx, 1, 0);
         lcd1602_string(ctx, line);
 
@@ -100,9 +99,10 @@ void display_max_distance(void *pvParameters)
 
     while (1)
     {
-				int current_max_distance_m = current_max_distance / 100;
-        snprintf(line, sizeof line, "%dM", current_max_distance_m);
-        lcd1602_set_cursor(ctx, 0, 14);
+        float current_max_distance_m = current_max_distance / 100;
+				
+        snprintf(line, sizeof line, "%.1fM", current_max_distance_m);
+        lcd1602_set_cursor(ctx, 0, 12);
         lcd1602_string(ctx, line);
 
         vTaskDelay(pdMS_TO_TICKS(2000));
